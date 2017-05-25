@@ -1,9 +1,14 @@
+// ==================================== Express Settings ===========================================//
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
+// ==================================== Import Socket.io ===========================================//
+var SocketIo = require('socket.io');
+var socketEvents = require('./socket.js');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -42,5 +47,13 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+const server = app.listen(3002, function() {
+  console.log('Pub/Sub Chatting Server on port 3002!');
+});
+
+const io = SocketIo(server);
+
+socketEvents(io);
 
 module.exports = app;
