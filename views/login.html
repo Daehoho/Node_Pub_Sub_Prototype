@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+
+<body>
+    <form method="post" action="/login" id="login_form">
+        EMAIL <input type="email" name="email" id="email"/> <br>
+        PW <input type="password" name="password" id="password"/> <br>
+    </form>
+
+    <script type="text/javascript">
+        $("#password").keyup(function(event) {
+            if(event.which == 13) {
+                $("#login_form").submit();
+            }
+        })
+    </script>
+</body>
+</html>

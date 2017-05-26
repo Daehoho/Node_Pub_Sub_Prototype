@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+    var chat_id = "";
+    var cnt = 0;
+    var socket = null;
+    var channel = '<%=group_name%>';
+    var member = {
+        member_no: '<%=member_no%>',
+        member_name: '<%=member_name%>'
+    };
+
+    $(document).ready(function () {
+        var socket = io.connect('http://localhost:3002');
+        var member_list = [];
+
+        //Enroll Chatting info
+        socket.emit('chat_join', { member: member, channel: channel });
+
+        //Succes Chatting Joint
+        socket.on('chat_connect', function (data) {
+            data = JSON.parse(data);
+            cnt = data.length;
+            $('#chat_member_list').empty();
+            // for (var i = 0; i < cnt; i++) {
+            //     var member_name = data[i].member_name;
+            // }
+        });
+
+        socket.on('connected_member', function (data) {
+            data = JSON.parse(data);
+            cnt = data.length;
+            $("#now_member_cnt").html(cnt);
+        });
+
+        socket.on('chat_log_info', function (data) {
+            data = JSON.parse(data);
+            $("#chat_logs").empty();
+            for (var i = 0; i < data.length; i++) {
+                $("#chat_logs").append('<li>' + data[i].log
+                    + '(' + data[i].date + ')' + '</li>')
+            }
+            $('.chat_history_list').scrollTop($("#chat_logs").heights());
+        });
+
+
+        socket.on('chat_fail', function (data) {
+            date = JSON.parse(data);
+            alert(data + 'already joined member');
+        });
+
+        socket.on("receive_message", function(data) {
+            data = decodeURIComponent(data);
+            data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
+            data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            $('#chat_list').append('<li>' + data + '</li>');
+            $('.chat_list').scrollTop($('#chat_list').height());
+        });
+
+        socket.on('memeber_disconnected', function (data) {
+            data = JSON.parse(data);
+            $("#now_member_cnt").html(--cnt);
+        });
+
+        // msg input and enter key
+        $('#chat_input').keyup(function (event) {
+            if (event.which == 13) {
+                var encodedMsg = encodeURIComponent($('chat_input').val());
+                socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
+                $('#chat_input').val(''); // clear input msg in chat_input area
+            }
+        });
+        chat_user();
+    });
+
+    function chat_input(data, socket) {
+    };
+
+    function chat_in() {
+
+    }
+
+    function chat_member() {
+
+    }
+
+    function connection() {
+
+    }
+    function chat_user() {
+        // socket.emit('chat_user', '{"channel": "workspace"}');
+    }
+
+</script>
+
+<body>
+    <div id="contents">
+        <h1>Chatting Pub/Sub - Prototype</h1>
+        <div class="chat_content">
+            <div class="chat_group_name"><strong>그룹명</strong> : <span id="chat_group_name"></span></div>
+            <div class="now_member_cnt"><strong>현재접속자수</strong> : <span id="now_member_cnt">-</span></div>
+        </div>
+
+        <div id="chat_form" class="chat_form"">
+
+            <div class="chat_list">
+                <ul id="chat_list"></ul>
+            </div>
+
+            <div class="chat_member">
+                <div class="chat_member_list">
+                    <ul id="chat_member_list"></ul>
+                </div>
+            </div>
+
+            <div class="chat_input">
+                <input type="text" id="chat_input" class="chat_input_txt" value="대화 글을 입력하세요." />
+            </div>
+
+            <div class="chat_btn">
+                <a href="javascript:chat_input();">입력</a>
+            </div>
+
+        </div>
+
+        <div class="chat_history">
+            <div class="chat_history_list">
+                <ul id="chat_logs"></ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

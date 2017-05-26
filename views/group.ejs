@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin-Group</title>
+<link rel='stylesheet' href='/stylesheets/style.css' />
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+    <h3>Hello <%=user.name%> (email : <%=user.email%>, member_no : <%=user.member_no%>)</h3>
+
+그룹<br>
+<table border="1">
+    <tr>
+        <td>group_no</td>
+        <td>group_name</td>
+        <td>group_desc</td>
+        <td>group_img</td>
+        <td>group_chat</td>
+    </tr>
+    <%
+      for(var i=0; i < groups.length; i++) 
+      {
+        var group = groups[i];
+    %>
+    <tr>
+        <td><%=group.GROUP_NO%></td>
+        <td><%=group.GROUP_NAME%></td>
+        <td><%=group.GROUP_DESC%></td>
+        <td><%=group.GROUP_IMG%></td>
+        <form method="post" action="/chat">
+         <input type="hidden" name="group_no" value="<%=group.GROUP_NO%>">
+         <input type="hidden" name="group_name" value="<%=group.GROUP_NAME%>">
+         <input type="hidden" name="member_name" value="<%=user.name%>">
+         <input type="hidden" name="member_no" value="<%=user.member_no%>">
+        <td><input type="submit" value="go chat"></td>
+        </form>
+    </tr>
+    <%
+      }
+    %>
+</table>
+
+</script>
+</body>
+</html>

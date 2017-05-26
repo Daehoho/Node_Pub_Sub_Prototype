@@ -1,11 +1,22 @@
-<!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<head>
+    <title>Room Chatting Prototype</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+
+<body>
+    <form method="post" action="/chat" id="join_form">
+        NAME <input type="text" name="nickname" id="nickname"/> <br>
+        ROOM <input type="text" name="room" id="room"/> <br>
+    </form>
+
+    <script type="text/javascript">
+        $("#room").keyup(function(event) {
+            if (event.which == 13) {
+                $("#join_form").submit();
+            }
+        })
+    </script>
+</body>
 </html>
