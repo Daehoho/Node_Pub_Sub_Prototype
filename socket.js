@@ -55,7 +55,7 @@ module.exports = function(io, publisher, subscriber) {
                 channel = msg['channel'];
             }
 
-            if(channel == current_channel) {
+            if(current_channel == 'chat') {
                 var chatting_message = msg.member_name + ' : ' + msg.message;
                 console.log('test publish');
                 publisher.publish(current_channel, chatting_message);
