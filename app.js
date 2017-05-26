@@ -67,7 +67,7 @@ app.use(session(
       port: redis_config.port,
       client: redis_client,
       prefix: "session:",
-      db: 0,
+      db: 1,
       ttl: 10800
     }),
     cookie: { maxAge: 10800 },
