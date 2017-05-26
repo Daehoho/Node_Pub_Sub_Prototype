@@ -1,6 +1,6 @@
 // ==================================== Global Variables Area ===========================================//
 var users = [];
-var current_channel = 'chat';
+var current_channel;
 
 // create Date for Log
 function getToday() {
@@ -17,23 +17,24 @@ module.exports = function(io, publisher, subscriber) {
             var member = data.member;
             var channel = data.channel;
 
+            subscriber.subscribe("chat_room:"+channel);
 
             console.log(subscriber);
 
-            // current_channel = channel;
+            current_channel = "chat_room:"+channel;
 
             socket.channel = channel;
             socket.member = member;
 
-            var result = users[member.member_no];
+            var index  = users.indexOf(member.member_no);
 
             console.log("ch" + channel);
             console.log("cu_ch" + current_channel);
 
-            if(result != undefined) {  // alreay user info exist
+            if(index != -1) {  // alreay user info exist
                 // socket.emit('chat_fail', JSON.stringify());
             } else {
-                users[member.member_no] = member;
+                users.push(member.member_no);
                 console.log(users);
                 console.log(Object.keys(users));
 
@@ -47,15 +48,16 @@ module.exports = function(io, publisher, subscriber) {
 
         socket.on('send_message', function(data) {
             var msg = data;
-            var channel = '';
+            var channel = 'chat_room:';
             console.log("ch" + channel);
             console.log("cu_ch" + current_channel);
 
             if(msg['channel'] != undefined) {
-                channel = msg['channel'];
+                channel += msg['channel'];
+                console.log(channel);
             }
 
-            if(current_channel == 'chat') {
+            if(current_channel == channel) {
                 var chatting_message = msg.member_name + ' : ' + msg.message;
                 console.log('test publish');
                 publisher.publish(current_channel, chatting_message);
@@ -89,11 +91,11 @@ module.exports = function(io, publisher, subscriber) {
 
         });
 
-        subscriber.on('message', function(current_channel, message) {
+        subscriber.on('pmessage', function(current_channel, message) {
             socket.emit('receive_message', message);
         });
 
-        subscriber.subscribe(current_channel);
+        subscriber.psubscribe("chat_room:*");
     });
 
     io.sockets.on('close', function (socket) {
