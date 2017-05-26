@@ -16,7 +16,7 @@ var redis = require('redis');
 var redis_client = require('./redis/redis');
 var redis_config = require('./redis/redis_info')().local;
 var redisStore = require('connect-redis')(session);
-var sub_client = require('./redis/redis');
+var sub_client = require('./redis/redis');edis.)
 var pub_client = require('./redis/redis');
 
 var mongoose = require('mongoose');
@@ -28,10 +28,10 @@ var users = require('./routes/users');
 
 var app = express();
 
-// var subscriber = redis.createClient(redis_config.port, redis_config.host).auth(redis_config.password);
-// var publisher = redis.createClient(redis_config.port, redis_config.host).auth(redis_config.password); 
-var subscriber = sub_client;
-var publisher = pub_client; 
+var subscriber = redis.createClient(redis_config.port, redis_config.host).auth(redis_config.password);
+var publisher = redis.createClient(redis_config.port, redis_config.host).auth(redis_config.password); 
+// var subscriber = sub_client;
+// var publisher = pub_client; 
 
 
 // ==================================== mongoDB connect and Schema  ===========================================//
