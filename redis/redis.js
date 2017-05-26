@@ -1,5 +1,5 @@
 var redis = require("redis");
-var config = require('./redis_info')().local;
+var config = require('./redis_info')().daou_server;
 var redisClient = redis.createClient(config.port, config.host);
 
 // if (config.password != undefined) {

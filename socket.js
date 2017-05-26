@@ -1,6 +1,6 @@
 // ==================================== Global Variables Area ===========================================//
 var users = [];
-var current_channel;
+var current_channel = 'chat';
 
 // create Date for Log
 function getToday() {
@@ -10,18 +10,19 @@ function getToday() {
             + ':' + date.getMinutes() + ':' + date.getSeconds();
 };
 
-module.exports = function(io, publisher, subscriber) {
+module.exports = function(io, pub, sub) {
+    console.log(sub);
     io.sockets.on('connection', function(socket) {
-
+    console.log(sub);
         socket.on('chat_join', function (data) {
             var member = data.member;
             var channel = data.channel;
 
-            subscriber.subscribe("chat_room:"+channel);
+            //sub.subscribe("chat_room:"+channel);
 
-            console.log(subscriber);
+            console.log(sub);
 
-            current_channel = "chat_room:"+channel;
+            //current_channel = "chat_room:"+channel;
 
             socket.channel = channel;
             socket.member = member;
@@ -56,11 +57,11 @@ module.exports = function(io, publisher, subscriber) {
                 channel += msg['channel'];
                 console.log(channel);
             }
-
+            channel = 'chat';
             if(current_channel == channel) {
                 var chatting_message = msg.member_name + ' : ' + msg.message;
                 console.log('test publish');
-                publisher.publish(current_channel, chatting_message);
+                pub.publish(current_channel, chatting_message);
             }
         });
 
@@ -78,6 +79,13 @@ module.exports = function(io, publisher, subscriber) {
             }
         });
 
+        sub.on('message', function(current_channel, message) {
+            socket.emit('receive_message', message);
+        });
+
+        //sub.psubscribe("chat_room:*");
+        sub.subscribe(current_channel);
+
         // event for member conn
         socket.on('chat_conn', function (data) {
 
@@ -91,17 +99,12 @@ module.exports = function(io, publisher, subscriber) {
 
         });
 
-        subscriber.on('pmessage', function(current_channel, message) {
-            socket.emit('receive_message', message);
-        });
-
-        subscriber.psubscribe("chat_room:*");
     });
 
     io.sockets.on('close', function (socket) {
-        subscriber.unsubscribe();
-        publisher.close();
-        subscriber.close();
+        sub.unsubscribe();
+        pub.close();
+        sub.close();
     });
 };
 
@@ -125,9 +128,9 @@ module.exports = function(io, publisher, subscriber) {
 //                // 현재접속자에 대한 새로고침
 //           });
 //           // 구독자 객체가 메시지를 받으면 소켓을 통해 메시지를 전달하는 함수
-//           subscriber.on('message', function (channel, message) {
+//           sub.on('message', function (channel, message) {
 //                // 사용자에게 메시지 전달. 클라이언트에게 보낸다.
 //           });
 //           // 구독자 객체는 'chat' 채널에 대한 구독을 시작
-//           subscriber.subscribe('chat');
+//           sub.subscribe('chat');
 //      }); 

@@ -14,10 +14,10 @@ var socketEvents = require('./socket.js');
 // ==================================== Import Database ===========================================//
 var redis = require('redis');
 var redis_client = require('./redis/redis');
-var redis_config = require('./redis/redis_info')().local;
+var redis_config = require('./redis/redis_info')().daou_server;
 var redisStore = require('connect-redis')(session);
-var sub_client = require('./redis/redis');edis.)
-var pub_client = require('./redis/redis');
+//var sub_client = require('./redis/redis');
+//var pub_client = require('./redis/redis');
 
 var mongoose = require('mongoose');
 
@@ -28,10 +28,12 @@ var users = require('./routes/users');
 
 var app = express();
 
-var subscriber = redis.createClient(redis_config.port, redis_config.host).auth(redis_config.password);
-var publisher = redis.createClient(redis_config.port, redis_config.host).auth(redis_config.password); 
-// var subscriber = sub_client;
-// var publisher = pub_client; 
+var sub = redis.createClient(redis_config.port, redis_config.host);
+sub.auth(redis_config.password, function (err) { if(err) throw err;});
+var pub = redis.createClient(redis_config.port, redis_config.host); 
+pub.auth(redis_config.password, function (err) { if(err) throw err;});
+// var sub = sub_client;
+// var pub = pub_client; 
 
 
 // ==================================== mongoDB connect and Schema  ===========================================//
@@ -57,6 +59,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+console.log("========================================================================================");
+console.log(sub);
+console.log("========================================================================================");
+console.log(pub);
 
 // redis-session
 app.use(session(
@@ -98,12 +104,12 @@ app.use(function(req, res, next) {
 //   res.render('error');
 // });
 
-const server = app.listen(3002, function() {
+const server = app.listen(3003, function() {
   console.log('Pub/Sub Chatting Server on port 3002!');
 });
 
 const io = SocketIo(server);
 
-socketEvents(io, publisher, subscriber);
+socketEvents(io, pub, sub);
 
 module.exports = app;
