@@ -1,6 +1,6 @@
 // ==================================== Global Variables Area ===========================================//
 var users = [];
-var current_channel;
+var current_channel = 'chat';
 
 // create Date for Log
 function getToday() {
@@ -17,10 +17,10 @@ module.exports = function(io, publisher, subscriber) {
             var member = data.member;
             var channel = data.channel;
 
-            subscriber.subscribe(channel);
+
             console.log(subscriber);
 
-            current_channel = channel;
+            // current_channel = channel;
 
             socket.channel = channel;
             socket.member = member;
@@ -89,9 +89,11 @@ module.exports = function(io, publisher, subscriber) {
 
         });
 
-        subscriber.on('message', function(channel, message) {
+        subscriber.on('message', function(current_channel, message) {
             socket.emit('receive_message', message);
         });
+
+        subscriber.subscribe(current_channel);
     });
 
     io.sockets.on('close', function (socket) {
