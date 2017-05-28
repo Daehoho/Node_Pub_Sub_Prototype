@@ -27,7 +27,7 @@ module.exports = function (io, pub, sub, req, res) {
             var index = users.indexOf(member.member_no);
 
             if (index != -1) {  // alreay user info exist
-                // socket.emit('chat_fail', JSON.stringify());
+                socket.emit('chat_fail', JSON.stringify(member.member_no));
             } else {
                 users.push(member.member_no);
                 console.log(users);
