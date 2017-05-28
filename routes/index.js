@@ -75,7 +75,8 @@ router.post('/chat', function (req, res, next) {
       if (err) console.log("query err: " + err);
       console.log(rows);
       if (req.session.email) {
-        res.render('chat', { member_no: chat_info.member_no, member_name: chat_info.member_name, group_name: chat_info.room, member_list: rows})
+        req.session.group_no = chat_info.group_no;
+        res.render('chat', { member_no: chat_info.member_no, member_name: chat_info.member_name, group_no: chat_info.group_no ,group_name: chat_info.room, member_list: rows})
       } else {
         res.send('<script>alert("no session information");location.href("/login");</script>');
       }

@@ -7,18 +7,24 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
+    var host = "192.168.219.102:3003";
     var chat_id = "";
     var cnt = 0;
     var socket = null;
-    var channel = '<%=group_name%>';
+    var group = {
+        group_no: '<%=group_no%>',
+        group_name: '<%=group_name%>'
+    };
     var member = {
         member_no: '<%=member_no%>',
         member_name: '<%=member_name%>'
     };
+    var channel = group.group_no;
+
+
 
     $(document).ready(function () {
-        var socket = io.connect('http://192.168.219.102:3003');
-//        var socket = io.connect('http://localhost:3002');
+        var socket = io.connect('http://'+host);
         var member_list = [];
 
         //Enroll Chatting info

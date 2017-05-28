@@ -1,73 +1,72 @@
 // ==================================== Global Variables Area ===========================================//
 var users = [];
-var current_channel = 'chat';
+var current_channel;
 
 // create Date for Log
 function getToday() {
     var date = new Date();
-    return date.getFullYear() + '.' + (date.getMonth() + 1) 
-            + '.' + date.getDate() + ' ' + date.getHours() 
-            + ':' + date.getMinutes() + ':' + date.getSeconds();
+    return date.getFullYear() + '.' + (date.getMonth() + 1)
+        + '.' + date.getDate() + ' ' + date.getHours()
+        + ':' + date.getMinutes() + ':' + date.getSeconds();
 };
 
-module.exports = function(io, pub, sub) {
-    console.log(sub);
-    io.sockets.on('connection', function(socket) {
-    console.log(sub);
+
+module.exports = function (io, pub, sub, req, res) {
+    console.log("1========================================================================================");
+    io.sockets.on('connection', function (socket) {
+        console.log("2========================================================================================");
+        console.log(sub);
+
         socket.on('chat_join', function (data) {
             var member = data.member;
             var channel = data.channel;
 
-            current_channel = channel;
-
-            sub.subscribe(current_channel);
-            console.log(current_channel);
-
             socket.channel = current_channel;
             socket.member = member;
 
-            var index  = users.indexOf(member.member_no);
+            var index = users.indexOf(member.member_no);
 
-            console.log("ch" + channel);
-            console.log("cu_ch" + current_channel);
-
-
-            if(index != -1) {  // alreay user info exist
+            if (index != -1) {  // alreay user info exist
                 // socket.emit('chat_fail', JSON.stringify());
             } else {
                 users.push(member.member_no);
                 console.log(users);
                 console.log(Object.keys(users));
 
-                socket.broadcast.emit('chat_connect', JSON.stringify(users));
-                socket.emit('chat_connect', JSON.stringify(users));
+                sub.subscribe(channel);
+                socket.join(channel);
 
-                socket.emit("connected_member", JSON.stringify(users));
-                socket.broadcast.emit("connected_member", JSON.stringify(users));
-            } 
+                io.sockets.in(channel).emit('chat_connect', JSON.stringify(users));
+                // socket.broadcast.emit('chat_connect', JSON.stringify(users));
+                // socket.emit('chat_connect', JSON.stringify(users));
+
+                io.sockets.in(channel).emit("connected_member", JSON.stringify(users));
+                // socket.emit("connected_member", JSON.stringify(users));
+                // socket.broadcast.emit("connected_member", JSON.stringify(users));
+            }
         });
 
-        socket.on('send_message', function(data) {
+        socket.on('send_message', function (data) {
             var msg = data;
             var channel;
             console.log(msg);
 
-            if(msg['channel'] != undefined) {
+            if (msg['channel'] != undefined) {
                 channel = msg['channel'];
                 console.log(channel);
             }
-            if(current_channel == channel) {
+            if (channel != undefined) {
                 var chatting_message = msg.member_name + ' : ' + msg.message;
-                console.log(current_channel);
-                pub.publish(current_channel, chatting_message);
+                console.log(channel);
+                pub.publish(channel, chatting_message);
             }
         });
 
         socket.on('disconnect', function (data) {
             var member_name = socket.member_name;
             var channel = socket.channel;
-            
-            if (member_name != undefined &&  channel != undefined) {
+
+            if (member_name != undefined && channel != undefined) {
                 console.log('member_name ' + member_name + ' has been disconnected');
 
                 data = { msg: "[" + getToday() + "]" + member_name + ' 님이 나가셨습니다.' };
@@ -80,8 +79,8 @@ module.exports = function(io, pub, sub) {
         // sub.on('pmessage', function(pattern, current_channel, message) {
         //     socket.emit('receive_message', message);
         // });
-        sub.on('message', function(current_channel, message) {
-            socket.emit('receive_message', message);
+        sub.on('message', function (channel, message) {
+            io.sockets.in(channel).emit('receive_message', message);
         });
 
         // sub.psubscribe("chat_room:*");
@@ -92,11 +91,11 @@ module.exports = function(io, pub, sub) {
 
         });
 
-        socket.on('send_msg', function(data) {
+        socket.on('send_msg', function (data) {
 
         });
 
-        socket.on('disconnect', function(data) {
+        socket.on('disconnect', function (data) {
 
         });
 

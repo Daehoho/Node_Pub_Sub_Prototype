@@ -59,10 +59,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-console.log("========================================================================================");
-console.log(sub);
-console.log("========================================================================================");
-console.log(pub);
+// console.log("========================================================================================");
+// console.log(sub);
+// console.log("========================================================================================");
+// console.log(pub);
 
 // redis-session
 app.use(session(
