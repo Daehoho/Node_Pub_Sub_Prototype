@@ -18,19 +18,19 @@ module.exports = function(io, pub, sub) {
             var member = data.member;
             var channel = data.channel;
 
-            //sub.subscribe("chat_room:"+channel);
+            current_channel = channel;
 
-            console.log(sub);
+            sub.subscribe(current_channel);
+            console.log(current_channel);
 
-            //current_channel = "chat_room:"+channel;
-
-            socket.channel = channel;
+            socket.channel = current_channel;
             socket.member = member;
 
             var index  = users.indexOf(member.member_no);
 
             console.log("ch" + channel);
             console.log("cu_ch" + current_channel);
+
 
             if(index != -1) {  // alreay user info exist
                 // socket.emit('chat_fail', JSON.stringify());
@@ -49,18 +49,16 @@ module.exports = function(io, pub, sub) {
 
         socket.on('send_message', function(data) {
             var msg = data;
-            var channel = 'chat_room:';
-            console.log("ch" + channel);
-            console.log("cu_ch" + current_channel);
+            var channel;
+            console.log(msg);
 
             if(msg['channel'] != undefined) {
-                channel += msg['channel'];
+                channel = msg['channel'];
                 console.log(channel);
             }
-            channel = 'chat';
             if(current_channel == channel) {
                 var chatting_message = msg.member_name + ' : ' + msg.message;
-                console.log('test publish');
+                console.log(current_channel);
                 pub.publish(current_channel, chatting_message);
             }
         });
@@ -79,12 +77,15 @@ module.exports = function(io, pub, sub) {
             }
         });
 
+        // sub.on('pmessage', function(pattern, current_channel, message) {
+        //     socket.emit('receive_message', message);
+        // });
         sub.on('message', function(current_channel, message) {
             socket.emit('receive_message', message);
         });
 
-        //sub.psubscribe("chat_room:*");
-        sub.subscribe(current_channel);
+        // sub.psubscribe("chat_room:*");
+        // sub.subscribe(current_channel);
 
         // event for member conn
         socket.on('chat_conn', function (data) {

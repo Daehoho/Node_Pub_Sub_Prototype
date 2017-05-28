@@ -73,7 +73,8 @@
         // msg input and enter key
         $('#chat_input').keyup(function (event) {
             if (event.which == 13) {
-                var encodedMsg = encodeURIComponent($('chat_input').val());
+                var encodedMsg = encodeURIComponent($('#chat_input').val());
+                console.log(encodedMsg);
                 socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
                 $('#chat_input').val(''); // clear input msg in chat_input area
             }
