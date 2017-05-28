@@ -14,5 +14,12 @@ module.exports = (function () {
             password: '*daou1234!',
             database: 'moyeo'
         },
+        home_server: {
+            host: 'localhost',
+            port: '3306',
+            user: 'moyeo',
+            password: '*daou1234!',
+            database: 'moyeo'
+        }
     }
 });
