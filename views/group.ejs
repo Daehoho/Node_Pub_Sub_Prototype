@@ -15,7 +15,6 @@
     $(document).ready(function() {
         var group_socket = io.connect('http://' + host + ":" + port + '/group');
         group_info = <%- JSON.stringify(groups) %>
-
         group_socket.emit('group_info', { group_info: group_info });
     });
 </script>

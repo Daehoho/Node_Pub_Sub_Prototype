@@ -22,14 +22,16 @@
         member_name: '<%=member_name%>'
     };
     var channel = group.group_no;
-
+    var group_info;
     $(document).ready(function () {
         var chat_socket = io.connect('http://'+ host + ':' + port +'/chat');
-        // var group_socket = io.connect('http://'+ host + ':' + port +'/group');
+        var group_socket = io.connect('http://' + host + ':' + port + '/group');
+        group_info = <%- JSON.stringify(groups) %>
         var member_list = [];
 
         //Enroll Chatting info
         chat_socket.emit('chat_join', { member: member, channel: channel });
+        group_socket.emit('group_info', { group_info: group_info });
 
         //Succes Chatting Joint
         chat_socket.on('chat_connect', function (data) {
@@ -41,7 +43,7 @@
             // }
         });
 
-        chat_socket.on('notify', function (data) {
+        group_socket.on('notify', function (data) {
             console.log(data);
         })
 
@@ -87,6 +89,7 @@
                 var encodedMsg = encodeURIComponent($('#chat_input').val());
                 console.log(encodedMsg);
                 chat_socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
+                group_socket.emit('send_notify', { channel: channel, member: member, message: encodedMsg });
                 $('#chat_input').val(''); // clear input msg in chat_input area
             }
         });

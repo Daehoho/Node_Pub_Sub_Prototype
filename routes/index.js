@@ -63,7 +63,7 @@ router.post('/chat', function (req, res, next) {
     group_no : req.body.group_no,
     room : req.body.group_name,
     member_name : req.body.member_name,
-    member_no : req.body.member_no
+    member_no : req.body.member_no,
   }
   var stmt = "SELECT MEMBER_NAME" + 
              " FROM MEMBER_TB" + 
@@ -76,7 +76,8 @@ router.post('/chat', function (req, res, next) {
       console.log(rows);
       if (req.session.email) {
         req.session.group_no = chat_info.group_no;
-        res.render('chat', { member_no: chat_info.member_no, member_name: chat_info.member_name, group_no: chat_info.group_no ,group_name: chat_info.room, member_list: rows})
+        var groups = req.session.groups;
+        res.render('chat', { member_no: chat_info.member_no, member_name: chat_info.member_name, group_no: chat_info.group_no ,group_name: chat_info.room, member_list: rows, groups: groups})
       } else {
         res.send('<script>alert("no session information");window.location.href("/login");</script>');
       }
@@ -107,8 +108,8 @@ router.get('/group', function (req, res, next) {
           console.log("query err : " + err);
         }
         console.log(rows);
-
         console.log(req.session);
+        req.session.groups = rows;
         res.render('group', { user: user_info, groups: rows});
         connection.release();
       });
