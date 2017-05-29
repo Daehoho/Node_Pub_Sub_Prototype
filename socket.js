@@ -31,7 +31,6 @@ module.exports = function (io, pub, sub, req, res) {
             } else {
                 users.push(member.member_no);
                 console.log(users);
-                console.log(Object.keys(users));
 
                 sub.subscribe(channel);
                 socket.join(channel);
@@ -79,9 +78,6 @@ module.exports = function (io, pub, sub, req, res) {
         // sub.on('pmessage', function(pattern, current_channel, message) {
         //     socket.emit('receive_message', message);
         // });
-        sub.on('message', function (channel, message) {
-            io.sockets.in(channel).emit('receive_message', message);
-        });
 
         // sub.psubscribe("chat_room:*");
         // sub.subscribe(current_channel);
@@ -99,6 +95,10 @@ module.exports = function (io, pub, sub, req, res) {
 
         });
 
+    });
+    sub.on('message', function (channel, message) {
+        console.log("sub.on" + channel + message);
+        io.sockets.in(channel).emit('receive_message', message);
     });
 
     io.sockets.on('close', function (socket) {
