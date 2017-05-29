@@ -40,8 +40,11 @@ module.exports = function (io, pub, sub) {
                 sub.subscribe("c:"+channel);
                 c_socket.join(channel);
 
-                chat.to(channel).emit('chat_connect', JSON.stringify(channels[channel].users));
-                chat.to(channel).emit("connected_member", JSON.stringify(channels[channel].users));
+                data = { msg: "[" + getToday() + "]" + member.member_name + ' 님이 접속하셨습니다.',
+                          users: channels[channel].users };
+
+                chat.to(channel).emit('chat_connect', data);
+                chat.to(channel).emit("connected_member", data);
             }
         });
 
@@ -73,9 +76,10 @@ module.exports = function (io, pub, sub) {
                         delete channels[channel].users[member.member_no];
                 }
 
-                data = { msg: "[" + getToday() + "]" + member.member_name + ' 님이 나가셨습니다.' };
+                data = { msg: "[" + getToday() + "]" + member.member_name + ' 님이 나가셨습니다.',
+                          users: channels[channel].users };
+                console.log(data);
 
-                chat.emit('member_disconnected', data);
                 chat.to(channel).emit('member_disconnected', data);
 
                 sub.unsubscribe("c:" + channel);

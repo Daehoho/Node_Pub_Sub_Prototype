@@ -8,7 +8,7 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
     // var host = "175.115.95.51:3003";
-    var host = "localhost";
+    var host = "192.168.219.102";
     var port = "3003";
     var chat_id = "";
     var cnt = 0;
@@ -37,10 +37,21 @@
 
         //Succes Chatting Joint
         chat_socket.on('chat_connect', function (data) {
-            data = JSON.parse(data);
-            cnt = Object.keys(data).length;
+            cnt = Object.keys(data.users).length;
             $('#chat_member_list').empty();
-            var result = current_connect(member_list ,Object.keys(data))
+            var result = current_connect(member_list ,Object.keys(data.users))
+            var temp_keys = Object.keys(result);
+            var temp_len = temp_keys.length;
+
+            for(var i = 0; i < temp_len; i++) {
+                $('#chat_member_list').append('<li>' + result[temp_keys[i]].member_name + ":"+ result[temp_keys[i]].state+'</li>');
+            }
+
+            data = decodeURIComponent(data.msg);
+            data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
+            data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            $('#chat_list').append('<li>' + data + '</li>');
+            $('.chat_list').scrollTop($('#chat_list').height());
         });
 
         group_socket.on('notify', function (data) {
@@ -48,8 +59,7 @@
         })
 
         chat_socket.on('connected_member', function (data) {
-            data = JSON.parse(data);
-            cnt = Object.keys(data).length;
+            cnt = Object.keys(data.users).length;
             $("#now_member_cnt").html(cnt);
         });
 
@@ -78,9 +88,23 @@
             $('.chat_list').scrollTop($('#chat_list').height());
         });
 
-        chat_socket.on('memeber_disconnected', function (data) {
-            data = JSON.parse(data);
+        chat_socket.on('member_disconnected', function (data) {
             $("#now_member_cnt").html(--cnt);
+
+            var result = current_connect(member_list ,Object.keys(data.users))
+            var temp_keys = Object.keys(result);
+            var temp_len = temp_keys.length;
+
+            $('#chat_member_list').empty();
+            for(var i = 0; i < temp_len; i++) {
+                $('#chat_member_list').append('<li>' + result[temp_keys[i]].member_name + ":"+ result[temp_keys[i]].state+'</li>');
+            }
+
+            data = decodeURIComponent(data.msg);
+            data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
+            data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            $('#chat_list').append('<li>' + data + '</li>');
+            $('.chat_list').scrollTop($('#chat_list').height());
         });
 
         // msg input and enter key
@@ -100,31 +124,30 @@
         var temp_key = Object.keys(member_list);
         var mem_len = temp_key.length;
         var con_len = connect_list.length;
-        console.log(connect_list);
         var current_connected_users = new Object();
+
         for(var i = 0; i < mem_len; i++) {
             current_connected_users[temp_key[i]] = { member_name : member_list[temp_key[i]], state : 'disconnected' };
         }
+
         for(var i = 0; i < con_len; i++) {
           var result = member_list[connect_list[i]];
-          console.log("i = "+ result);
           if(result != undefined)  {
               current_connected_users[connect_list[i]] = { member_name : result, state : 'connected' };
           }
         }
-        console.log(current_connected_users);
+
         return current_connected_users;
     }
 
     function set_member_list(member_list) {
         var len = member_list.length;
         var result = [];
+
         for(var i = 0; i < len; i++) {
             var member = member_list;
             result[member[i].MEMBER_NO] = member[i].MEMBER_NAME;
         }
-        console.log("set_member_list");
-        console.log(result);
         return result;
     }
 
@@ -159,11 +182,13 @@
         <div id="chat_form" class="chat_form"">
 
             <div class="chat_list">
+                <strong>대화</strong><br>
                 <ul id="chat_list"></ul>
             </div>
 
             <div class="chat_member">
                 <div class="chat_member_list">
+                    <strong>현재 접속 리스트</strong><br>
                     <ul id="chat_member_list"></ul>
                 </div>
             </div>
