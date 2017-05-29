@@ -73,10 +73,10 @@ app.use(session(
       port: redis_config.port,
       client: redis_client,
       prefix: "session:",
-      db: 1,
-      ttl: 10800
+      db: 0,
+      ttl: 60 
     }),
-    cookie: { maxAge: 10800 },
+    // cookie: { maxAge: 60 },
     saveUninitialized: false,
     resave: true
   }

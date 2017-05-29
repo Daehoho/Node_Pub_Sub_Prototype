@@ -8,7 +8,8 @@
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
     // var host = "175.115.95.51:3003";
-    var host = "localhost:3003";
+    var host = "localhost";
+    var port = "3003";
     var chat_id = "";
     var cnt = 0;
     var socket = null;
@@ -22,32 +23,35 @@
     };
     var channel = group.group_no;
 
-
-
     $(document).ready(function () {
-        var socket = io.connect('http://'+host);
+        var chat_socket = io.connect('http://'+ host + ':' + port +'/chat');
+        // var group_socket = io.connect('http://'+ host + ':' + port +'/group');
         var member_list = [];
 
         //Enroll Chatting info
-        socket.emit('chat_join', { member: member, channel: channel });
+        chat_socket.emit('chat_join', { member: member, channel: channel });
 
         //Succes Chatting Joint
-        socket.on('chat_connect', function (data) {
+        chat_socket.on('chat_connect', function (data) {
             data = JSON.parse(data);
-            cnt = data.length;
+            cnt = Object.keys(data).length;
             $('#chat_member_list').empty();
             // for (var i = 0; i < cnt; i++) {
             //     var member_name = data[i].member_name;
             // }
         });
 
-        socket.on('connected_member', function (data) {
+        chat_socket.on('notify', function (data) {
+            console.log(data);
+        })
+
+        chat_socket.on('connected_member', function (data) {
             data = JSON.parse(data);
-            cnt = data.length;
+            cnt = Object.keys(data).length;
             $("#now_member_cnt").html(cnt);
         });
 
-        socket.on('chat_log_info', function (data) {
+        chat_socket.on('chat_log_info', function (data) {
             data = JSON.parse(data);
             $("#chat_logs").empty();
             for (var i = 0; i < data.length; i++) {
@@ -58,12 +62,12 @@
         });
 
 
-        socket.on('chat_fail', function (data) {
+        chat_socket.on('chat_fail', function (data) {
             date = JSON.parse(data);
             alert(data + 'already joined member');
         });
 
-        socket.on("receive_message", function(data) {
+        chat_socket.on("receive_message", function(data) {
             console.log(data);
             data = decodeURIComponent(data);
             data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
@@ -72,7 +76,7 @@
             $('.chat_list').scrollTop($('#chat_list').height());
         });
 
-        socket.on('memeber_disconnected', function (data) {
+        chat_socket.on('memeber_disconnected', function (data) {
             data = JSON.parse(data);
             $("#now_member_cnt").html(--cnt);
         });
@@ -82,7 +86,7 @@
             if (event.which == 13) {
                 var encodedMsg = encodeURIComponent($('#chat_input').val());
                 console.log(encodedMsg);
-                socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
+                chat_socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
                 $('#chat_input').val(''); // clear input msg in chat_input area
             }
         });
@@ -104,7 +108,7 @@
 
     }
     function chat_user() {
-        // socket.emit('chat_user', '{"channel": "workspace"}');
+        // chat_socket.emit('chat_user', '{"channel": "workspace"}');
     }
 
 </script>
@@ -113,7 +117,7 @@
     <div id="contents">
         <h1>Chatting Pub/Sub - Prototype</h1>
         <div class="chat_content">
-            <div class="chat_group_name"><strong>그룹명</strong> : <span id="chat_group_name"></span></div>
+            <div class="chat_group_name"><strong>그룹명</strong> : <span id="chat_group_name"><%= group_name %></span></div>
             <div class="now_member_cnt"><strong>현재접속자수</strong> : <span id="now_member_cnt">-</span></div>
         </div>
 
