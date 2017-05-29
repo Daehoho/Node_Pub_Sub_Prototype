@@ -22,6 +22,7 @@ router.get('/logout', function(req, res, next) {
     }
   });
 });
+
 router.post('/login', function(req, res, next) {
   req.accepts('application/json');
 
@@ -65,7 +66,7 @@ router.post('/chat', function (req, res, next) {
     member_name : req.body.member_name,
     member_no : req.body.member_no,
   }
-  var stmt = "SELECT MEMBER_NAME" + 
+  var stmt = "SELECT MEMBER_NO, MEMBER_NAME" + 
              " FROM MEMBER_TB" + 
              " WHERE MEMBER_NO IN" + 
              " (SELECT MEMBER_NO FROM MEMBER_GROUP_TB WHERE GROUP_NO = ? AND MEMBER_NO != ?)";
@@ -75,7 +76,6 @@ router.post('/chat', function (req, res, next) {
       if (err) console.log("query err: " + err);
       console.log(rows);
       if (req.session.email) {
-        req.session.group_no = chat_info.group_no;
         var groups = req.session.groups;
         res.render('chat', { member_no: chat_info.member_no, member_name: chat_info.member_name, group_no: chat_info.group_no ,group_name: chat_info.room, member_list: rows, groups: groups})
       } else {

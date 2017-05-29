@@ -21,7 +21,6 @@ module.exports = function (io, pub, sub) {
             c_socket.channel = channel;
             c_socket.member = member;
 
-            console.log('join');
             if(channels[channel] == undefined) {
                 console.log('channel create : ' + channel);
                 channels[channel] = new Object();
@@ -31,7 +30,7 @@ module.exports = function (io, pub, sub) {
             var result = channels[channel].users[member.member_no];
 
             if (result != undefined) {  // alreay user info exist
-                chat.emit('chat_fail', JSON.stringify(member.member_name));
+                chat.to(channel).emit('chat_fail', JSON.stringify(member.member_name));
             } else {
                 console.log('channel create: ' + channel);
                 channels[channel].users[member.member_no] = c_socket.id;
@@ -42,12 +41,7 @@ module.exports = function (io, pub, sub) {
                 c_socket.join(channel);
 
                 chat.to(channel).emit('chat_connect', JSON.stringify(channels[channel].users));
-                // chat_socket.broadcast.emit('chat_connect', JSON.stringify(users));
-                // chat_socket.emit('chat_connect', JSON.stringify(users));
-
                 chat.to(channel).emit("connected_member", JSON.stringify(channels[channel].users));
-                // chat_socket.emit("connected_member", JSON.stringify(users));
-                // chat_socket.broadcast.emit("connected_member", JSON.stringify(users));
             }
         });
 

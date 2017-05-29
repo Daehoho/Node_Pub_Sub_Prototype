@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
-
 <head>
+    <title>Chatting</title>
     <meta charset="utf-8">
 </head>
 <script src="/socket.io/socket.io.js"></script>
@@ -12,7 +12,6 @@
     var port = "3003";
     var chat_id = "";
     var cnt = 0;
-    var socket = null;
     var group = {
         group_no: '<%=group_no%>',
         group_name: '<%=group_name%>'
@@ -23,12 +22,15 @@
     };
     var channel = group.group_no;
     var group_info;
+    var member_list;
+
     $(document).ready(function () {
         var chat_socket = io.connect('http://'+ host + ':' + port +'/chat');
         var group_socket = io.connect('http://' + host + ':' + port + '/group');
         group_info = <%- JSON.stringify(groups) %>
-        var member_list = [];
+        member_list = <%- JSON.stringify(member_list) %>
 
+        member_list = set_member_list(member_list);
         //Enroll Chatting info
         chat_socket.emit('chat_join', { member: member, channel: channel });
         group_socket.emit('group_info', { group_info: group_info });
@@ -38,9 +40,7 @@
             data = JSON.parse(data);
             cnt = Object.keys(data).length;
             $('#chat_member_list').empty();
-            // for (var i = 0; i < cnt; i++) {
-            //     var member_name = data[i].member_name;
-            // }
+            var result = current_connect(member_list ,Object.keys(data))
         });
 
         group_socket.on('notify', function (data) {
@@ -95,6 +95,38 @@
         });
         chat_user();
     });
+    function current_connect(memeber_list, connect_list) {
+        console.log("current_connect");
+        var temp_key = Object.keys(member_list);
+        var mem_len = temp_key.length;
+        var con_len = connect_list.length;
+        console.log(connect_list);
+        var current_connected_users = new Object();
+        for(var i = 0; i < mem_len; i++) {
+            current_connected_users[temp_key[i]] = { member_name : member_list[temp_key[i]], state : 'disconnected' };
+        }
+        for(var i = 0; i < con_len; i++) {
+          var result = member_list[connect_list[i]];
+          console.log("i = "+ result);
+          if(result != undefined)  {
+              current_connected_users[connect_list[i]] = { member_name : result, state : 'connected' };
+          }
+        }
+        console.log(current_connected_users);
+        return current_connected_users;
+    }
+
+    function set_member_list(member_list) {
+        var len = member_list.length;
+        var result = [];
+        for(var i = 0; i < len; i++) {
+            var member = member_list;
+            result[member[i].MEMBER_NO] = member[i].MEMBER_NAME;
+        }
+        console.log("set_member_list");
+        console.log(result);
+        return result;
+    }
 
     function chat_input(data, socket) {
     };

@@ -74,7 +74,7 @@ app.use(session(
       client: redis_client,
       prefix: "session:",
       db: 0,
-      ttl: 60 
+      ttl: 180 
     }),
     // cookie: { maxAge: 60 },
     saveUninitialized: false,
