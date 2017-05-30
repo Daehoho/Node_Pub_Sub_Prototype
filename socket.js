@@ -30,7 +30,7 @@ module.exports = function (io, pub, sub) {
             var result = channels[channel].users[member.member_no];
 
             if (result != undefined) {  // alreay user info exist
-                chat.to(channel).emit('chat_fail', JSON.stringify(member.member_name));
+                chat.emit('chat_fail', JSON.stringify(member.member_name));
             } else {
                 channels[channel].users[member.member_no] = c_socket.id;
 
