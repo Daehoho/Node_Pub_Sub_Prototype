@@ -126,7 +126,7 @@ module.exports = function (io, pub, sub) {
         channel = channel.split(":")[1];
         if (prefix == "g") {
             console.log("sub.on group : " + message);
-            group.to(channel).emit('notify', message);
+            group.broadcast.to(channel).emit('notify', message);
         } 
         if (prefix == 'c') {
             console.log("chatting room : " + channel + message);
