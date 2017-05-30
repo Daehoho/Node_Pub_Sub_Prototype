@@ -57,6 +57,12 @@
 
         group_socket.on('notify', function (data) {
             console.log(data);
+
+            data = decodeURIComponent(data);
+            data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
+            data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            $('#chat_notify_list').append('<li>' + data + '</li>');
+            $('.chat_notify_list').scrollTop($('#chat_notify_list').height());
         })
 
         chat_socket.on('connected_member', function (data) {
@@ -181,6 +187,11 @@
         </div>
 
         <div id="chat_form" class="chat_form"">
+
+            <div class="chat_notify_list">
+                <strong>알림</strong><br>
+                <ul id="chat_notify_list"></ul>
+            </div>
 
             <div class="chat_list">
                 <strong>대화</strong><br>
