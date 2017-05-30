@@ -4,6 +4,7 @@
     <title>Chatting</title>
     <meta charset="utf-8">
 </head>
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
@@ -13,14 +14,17 @@
     var port = "3003";
     var chat_id = "";
     var cnt = 0;
+
     var group = {
         group_no: '<%=group_no%>',
         group_name: '<%=group_name%>'
     };
+
     var member = {
         member_no: '<%=member_no%>',
         member_name: '<%=member_name%>'
     };
+
     var channel = group.group_no;
     var group_info;
     var member_list;
@@ -107,8 +111,6 @@
             }
 
             data = decodeURIComponent(data.msg);
-            data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
-            data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             $('#chat_list').append('<li>' + data + '</li>');
             $('.chat_list').scrollTop($('#chat_list').height());
         });
@@ -116,15 +118,19 @@
         // msg input and enter key
         $('#chat_input').keyup(function (event) {
             if (event.which == 13) {
-                var encodedMsg = encodeURIComponent($('#chat_input').val());
-                console.log(encodedMsg);
-                chat_socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
-                group_socket.emit('send_notify', { channel: channel, member: member, message: encodedMsg });
-                $('#chat_input').val(''); // clear input msg in chat_input area
+                chat_input();
             }
         });
         chat_user();
     });
+    function chat_input() {
+       var encodedMsg = encodeURIComponent($('#chat_input').val());
+       console.log(encodedMsg);
+       chat_socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
+       group_socket.emit('send_notify', { channel: channel, member: member, message: encodedMsg });
+       $('#chat_input').val(''); // clear input msg in chat_input area
+    };
+    // current connected member and state Object
     function current_connect(memeber_list, connect_list) {
         console.log("current_connect");
         var temp_key = Object.keys(member_list);
@@ -146,6 +152,7 @@
         return current_connected_users;
     }
 
+    // member list in same group
     function set_member_list(member_list) {
         var len = member_list.length;
         var result = [];
@@ -156,25 +163,6 @@
         }
         return result;
     }
-
-    function chat_input(data, socket) {
-    };
-
-    function chat_in() {
-
-    }
-
-    function chat_member() {
-
-    }
-
-    function connection() {
-
-    }
-    function chat_user() {
-        // chat_socket.emit('chat_user', '{"channel": "workspace"}');
-    }
-
 </script>
 
 <body>
@@ -205,7 +193,7 @@
             </div>
 
             <div class="chat_input">
-                <input type="text" id="chat_input" class="chat_input_txt" value="대화 글을 입력하세요." />
+                <input type="text" id="chat_input" class="chat_input_txt" value="대화 글을 입력하세요." onclick="$(this).val('');"/>
             </div>
 
             <div class="chat_btn">
