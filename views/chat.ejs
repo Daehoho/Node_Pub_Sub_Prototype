@@ -57,12 +57,13 @@
 
         group_socket.on('notify', function (data) {
             console.log(data);
-
-            data = decodeURIComponent(data);
-            data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
-            data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            $('#chat_notify_list').append('<li>' + data + '</li>');
-            $('.chat_notify_list').scrollTop($('#chat_notify_list').height());
+            if(data.room != group.group_no) {
+                data = decodeURIComponent(data.msg);
+                data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
+                data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                $('#chat_notify_list').append('<li>' + data + '</li>');
+                $('.chat_notify_list').scrollTop($('#chat_notify_list').height());
+            }
         })
 
         chat_socket.on('connected_member', function (data) {

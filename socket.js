@@ -2,7 +2,6 @@
 var channels = []; // pub/sub channel list for group
 var users = []; // user list for check already join
 var current_channel;
-var t_socket;
 
 // create Date for Log
 function getToday() {
@@ -116,7 +115,7 @@ module.exports = function (io, pub, sub) {
         g_socket.on('send_notify', function (data) {
             var data = data;
             var msg = "[" + getToday() + "] " + data.channel + "번 방에서 " + data.member.member_name + "에게 알림이 왔습니다";
-            pub.publish("g:" + data.channel, msg);
+            pub.publish("g:" + data.channel, { room : data.channel, msg: msg});
         });
 
     });
@@ -128,7 +127,7 @@ module.exports = function (io, pub, sub) {
         channel = channel.split(":")[1];
         if (prefix == "g") {
             console.log("sub.on group : " + message);
-            t_socket.broadcast.in(channel).emit('notify', message);
+            group.to(channel).emit('notify', message);
         } 
         if (prefix == 'c') {
             console.log("chatting room : " + channel + message);
