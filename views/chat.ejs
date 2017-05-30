@@ -118,11 +118,11 @@
         // msg input and enter key
         $('#chat_input').keyup(function (event) {
             if (event.which == 13) {
-                chat_input();
+                chat_input(chat_socket, group_socket);
             }
         });
     });
-    function chat_input() {
+    function chat_input(chat_socket, group_socket) {
        var encodedMsg = encodeURIComponent($('#chat_input').val());
        console.log(encodedMsg);
        chat_socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
