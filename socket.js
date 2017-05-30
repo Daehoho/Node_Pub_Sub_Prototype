@@ -2,6 +2,7 @@
 var channels = []; // pub/sub channel list for group
 var users = []; // user list for check already join
 var current_channel;
+var t_socket;
 
 // create Date for Log
 function getToday() {
@@ -96,6 +97,7 @@ module.exports = function (io, pub, sub) {
     });
 
     var group = io.of('/group').on('connection', function (g_socket) {
+        t_socket = g_socket;
         g_socket.on('group_info', function (data) {
             var len = Object.keys(data.group_info).length;
 
@@ -126,7 +128,7 @@ module.exports = function (io, pub, sub) {
         channel = channel.split(":")[1];
         if (prefix == "g") {
             console.log("sub.on group : " + message);
-            group.socket.broadcast.to(channel).emit('notify', message);
+            t_socket.broadcast.in(channel).emit('notify', message);
         } 
         if (prefix == 'c') {
             console.log("chatting room : " + channel + message);
