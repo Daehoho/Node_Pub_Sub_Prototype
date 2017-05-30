@@ -42,7 +42,7 @@
         chat_socket.emit('chat_join', { member: member, channel: channel });
         group_socket.emit('group_info', { group_info: group_info });
 
-        //Succes Chatting Joint
+        //Succes Chatting Join
         chat_socket.on('chat_connect', function (data) {
             cnt = Object.keys(data.users).length;
             $('#chat_member_list').empty();
@@ -65,7 +65,7 @@
             var token = data.split("*")[0];
             data = data.split("*")[1];
             if(token != group.group_no) {
-                $('#chat_notify_list').append('<li>' + data + '</li>');
+                $('#chat_notify_list').append('<li> <a href="/group">' + data + '</a> </li>');
                 $('.chat_notify_list').scrollTop($('#chat_notify_list').height());
             }
         })
@@ -89,6 +89,7 @@
         chat_socket.on('chat_fail', function (data) {
             date = JSON.parse(data);
             alert(data + '님은 이미 접속해있습니다.');
+            location.href("/group");
         });
 
         chat_socket.on("receive_message", function(data) {
@@ -168,7 +169,7 @@
 
 <body>
     <div id="contents">
-        <h1>Chatting Pub/Sub - Prototype</h1>
+        <h1>Chatting Pub/Sub</h1>
         <div class="chat_content">
             <div class="chat_group_name"><strong>그룹명</strong> : <span id="chat_group_name"><%= group_name %></span></div>
             <div class="now_member_cnt"><strong>현재접속자수</strong> : <span id="now_member_cnt">-</span></div>
