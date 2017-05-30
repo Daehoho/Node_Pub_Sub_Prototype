@@ -37,8 +37,7 @@ router.post('/login', function(req, res, next) {
       if (err) {
         console.log(err);
       }
-      console.log("q_result: ");
-      console.log(rows);
+
       var cnt = rows[0].CNT;
       var email = rows[0].EMAIL;
       var name = rows[0].MEMBER_NAME;
@@ -74,7 +73,7 @@ router.post('/chat', function (req, res, next) {
     if(err) console.log("get connection err: " + err);
     connection.query(stmt, [chat_info.group_no, chat_info.member_no], function(err, rows) {
       if (err) console.log("query err: " + err);
-      console.log(rows);
+
       if (req.session.email) {
         var groups = req.session.groups;
         res.render('chat', { member_no: chat_info.member_no, member_name: chat_info.member_name, group_no: chat_info.group_no ,group_name: chat_info.room, member_list: rows, groups: groups})
@@ -93,12 +92,10 @@ router.get('/group', function (req, res, next) {
       name : req.session.name,
       member_no : req.session.member_no
     }
-    
     var stmt = "select GN.GROUP_NO, GROUP_NAME, GROUP_DESC, GROUP_IMG" + 
                " FROM GROUP_TB G," + 
                      " (select GROUP_NO from MEMBER_GROUP_TB where MEMBER_NO = ?) GN" +
                " WHERE G.GROUP_NO = GN.GROUP_NO";
-
     pool.getConnection(function(err, connection) {
       if(err) {
         console.log("connection err: " + err);
@@ -115,7 +112,7 @@ router.get('/group', function (req, res, next) {
       });
     })
   } else {
-    res.send('<script>alert("no session information");window.location.href("/login");</script>');
+    res.send('<script>alert("no session information");location.href("/login");</script>');
   }
 });
 
