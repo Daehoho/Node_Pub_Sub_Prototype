@@ -28,10 +28,12 @@
     var channel = group.group_no;
     var group_info;
     var member_list;
+    var chat_socket = null;
+    var group_socket = null;
 
     $(document).ready(function () {
-        var chat_socket = io.connect('http://'+ host + ':' + port +'/chat');
-        var group_socket = io.connect('http://' + host + ':' + port + '/group');
+        chat_socket = io.connect('http://'+ host + ':' + port +'/chat');
+        group_socket = io.connect('http://' + host + ':' + port + '/group');
         group_info = <%- JSON.stringify(groups) %>
         member_list = <%- JSON.stringify(member_list) %>
 
@@ -118,11 +120,11 @@
         // msg input and enter key
         $('#chat_input').keyup(function (event) {
             if (event.which == 13) {
-                chat_input(chat_socket, group_socket);
+                chat_input();
             }
         });
     });
-    function chat_input(chat_socket, group_socket) {
+    function chat_input() {
        var encodedMsg = encodeURIComponent($('#chat_input').val());
        console.log(encodedMsg);
        chat_socket.emit('send_message', { channel: channel, member: member, message: encodedMsg });
