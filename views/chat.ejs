@@ -77,8 +77,7 @@
 
         chat_socket.on('chat_fail', function (data) {
             date = JSON.parse(data);
-            alert(data + 'already joined member');
-            location.href='/group';
+            alert(data + '님은 이미 접속해있습니다.');
         });
 
         chat_socket.on("receive_message", function(data) {
