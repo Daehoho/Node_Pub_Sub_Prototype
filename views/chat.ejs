@@ -109,7 +109,7 @@
 
             $('#chat_member_list').empty();
             for(var i = 0; i < temp_len; i++) {
-                $('#chat_member_list').append('<li>' + result[temp_keys[i]].member_name + ":"+ result[temp_keys[i]].state+'</li>');
+                $('#chat_member_list').append('<li>' + result[temp_keys[i]].member_name + " : "+ result[temp_keys[i]].state+'</li>');
             }
 
             data = decodeURIComponent(data.msg);
@@ -181,16 +181,16 @@
                 <ul id="chat_notify_list"></ul>
             </div>
 
-            <div class="chat_list">
-                <strong>대화</strong><br>
-                <ul id="chat_list"></ul>
-            </div>
-
             <div class="chat_member">
                 <div class="chat_member_list">
                     <strong>현재 접속 리스트</strong><br>
                     <ul id="chat_member_list"></ul>
                 </div>
+            </div>
+
+            <div class="chat_list">
+                <strong>대화</strong><br>
+                <ul id="chat_list"></ul>
             </div>
 
             <div class="chat_input">
