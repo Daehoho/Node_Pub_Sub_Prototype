@@ -57,8 +57,10 @@
 
         group_socket.on('notify', function (data) {
             console.log(data);
-            if(data.room != group.group_no) {
-                data = decodeURIComponent(data.msg);
+            data = decodeURIComponent(data.msg);
+            var token = data.split(":")[0];
+            data = data.split(":")[1];
+            if(token != group.group_no) {
                 data = ((data.replace(/&/g, '&amp;')).replace(/\"/g, '&quot;')).replace(/\'/g, '&#39;');
                 data = data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
                 $('#chat_notify_list').append('<li>' + data + '</li>');

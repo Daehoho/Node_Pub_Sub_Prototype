@@ -114,8 +114,8 @@ module.exports = function (io, pub, sub) {
         });
         g_socket.on('send_notify', function (data) {
             var data = data;
-            var msg = "[" + getToday() + "] " + data.channel + "번 방에서 " + data.member.member_name + "에게 알림이 왔습니다";
-            pub.publish("g:" + data.channel, { room : data.channel, msg: msg});
+            var msg = data.channel + ":" + "[" + getToday() + "] " + data.channel + "번 방에서 " + data.member.member_name + "에게 알림이 왔습니다";
+            pub.publish("g:" + data.channel, msg);
         });
 
     });
