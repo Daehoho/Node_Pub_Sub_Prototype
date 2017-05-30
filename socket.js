@@ -30,7 +30,7 @@ module.exports = function (io, pub, sub) {
             var result = channels[channel].users[member.member_no];
 
             if (result != undefined) {  // alreay user info exist
-                chat.emit('chat_fail', JSON.stringify(member.member_name));
+                chat.emit('chatefail', JSON.stringify(member.member_name));
             } else {
                 channels[channel].users[member.member_no] = c_socket.id;
 
@@ -62,6 +62,7 @@ module.exports = function (io, pub, sub) {
         });
 
         c_socket.on('disconnect', function (data) {
+            console.log("============== chat disconnected ==============");
             var channel = c_socket.channel;
             if (channel != undefined && channels[channel] != undefined) {
                 var member = c_socket.member;
@@ -108,7 +109,7 @@ module.exports = function (io, pub, sub) {
         });
 
         g_socket.on('disconnect', function (data) {
-            console.log("group disconnected ==============");
+            console.log("============== group disconnected ==============");
         });
         g_socket.on('send_notify', function (data) {
             var data = data;
@@ -134,12 +135,14 @@ module.exports = function (io, pub, sub) {
     });
 
     io.of('/chat').on('close', function (chat_socket) {
+        console.log("============== chat  close ==============");
         sub.unsubscribe();
         pub.close();
         sub.close();
     });
 
     io.of('/group').on('close', function (chat_socket) {
+        console.log("============== chat close ==============");
         sub.unsubscribe();
         pub.close();
         sub.close();
