@@ -56,7 +56,6 @@
         });
 
         group_socket.on('notify', function (data) {
-            console.log(data);
             var token = data.split("*")[0];
             data = data.split("*")[1];
             if(token != group.group_no) {
