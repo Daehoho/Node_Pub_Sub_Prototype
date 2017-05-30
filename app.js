@@ -14,7 +14,7 @@ var socketEvents = require('./socket.js');
 // ==================================== Import Database ===========================================//
 var redis = require('redis');
 var redis_client = require('./redis/redis');
-var redis_config = require('./redis/redis_info')().home_server;
+var redis_config = require('./redis/redis_info')().daou_server;
 var redisStore = require('connect-redis')(session);
 //var sub_client = require('./redis/redis');
 //var pub_client = require('./redis/redis');

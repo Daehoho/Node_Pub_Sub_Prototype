@@ -32,12 +32,10 @@ module.exports = function (io, pub, sub) {
             if (result != undefined) {  // alreay user info exist
                 chat.to(channel).emit('chat_fail', JSON.stringify(member.member_name));
             } else {
-                console.log('channel create: ' + channel);
                 channels[channel].users[member.member_no] = c_socket.id;
 
-                console.log(channels);
-
                 sub.subscribe("c:"+channel);
+                sub.unsubscribe("g:"+channel);
                 c_socket.join(channel);
 
                 data = { msg: "[" + getToday() + "]" + member.member_name + ' 님이 접속하셨습니다.',
@@ -65,7 +63,6 @@ module.exports = function (io, pub, sub) {
 
         c_socket.on('disconnect', function (data) {
             var channel = c_socket.channel;
-            console.log("socket.channel" + c_socket.channel);
             if (channel != undefined && channels[channel] != undefined) {
                 var member = c_socket.member;
 
@@ -79,10 +76,9 @@ module.exports = function (io, pub, sub) {
                 data = { msg: "[" + getToday() + "]" + member.member_name + ' 님이 나가셨습니다.',
                           users: channels[channel].users };
                 console.log(data);
-
                 chat.to(channel).emit('member_disconnected', data);
-
                 sub.unsubscribe("c:" + channel);
+
                 console.log("channel = c:" + channel + ", member = " + member.member_name + " disconnect")
             }
         });
@@ -99,10 +95,8 @@ module.exports = function (io, pub, sub) {
     });
 
     var group = io.of('/group').on('connection', function (g_socket) {
-        console.log("test connection group");
         g_socket.on('group_info', function (data) {
             var len = Object.keys(data.group_info).length;
-            console.log("test connection group =====");
 
             for (var i = 0; i < len; i++) {
                 var group = data.group_info[i];
@@ -113,12 +107,14 @@ module.exports = function (io, pub, sub) {
             }
         });
 
+        g_socket.on('disconnect', function (data) {
+            console.log("group disconnected ==============");
+        });
         g_socket.on('send_notify', function (data) {
             var data = data;
-            console.log("*************notify**********")
-            console.log(data);
             pub.publish("g:" + data.channel, "notify! to All " + data.channel + "from " + data.member.member_name);
         });
+
     });
 
     sub.on('message', function (channel, message) {
@@ -138,6 +134,12 @@ module.exports = function (io, pub, sub) {
     });
 
     io.of('/chat').on('close', function (chat_socket) {
+        sub.unsubscribe();
+        pub.close();
+        sub.close();
+    });
+
+    io.of('/group').on('close', function (chat_socket) {
         sub.unsubscribe();
         pub.close();
         sub.close();
